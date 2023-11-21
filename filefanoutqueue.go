@@ -279,7 +279,7 @@ func (q *FileFanoutQueue) getQueueFront(fanoutID int64) (*QueueFront, error) {
 func (q *QueueFront) open(path string) error {
 
 	frontFilePath := path + "/" + FanoutFrontFileName + strconv.Itoa(int(q.fanoutID)) + "/"
-	err := os.MkdirAll(frontFilePath, os.ModeDir)
+	err := os.MkdirAll(frontFilePath, os.ModePerm)
 	if err != nil {
 		return err
 	}
