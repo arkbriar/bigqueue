@@ -264,7 +264,6 @@ func (q *FileQueue) Open(dir string, queueName string, options *Options) error {
 		filePath:        q.path + "/" + DataFileName,
 		filePrefix:      filePrefix,
 		fileSuffix:      fileSuffix,
-		lockMap:         make(map[int64]*sync.Mutex),
 		dbMap:           make(map[int64]*DB),
 		InitialMmapSize: q.options.DataPageSize,
 	}
@@ -274,7 +273,6 @@ func (q *FileQueue) Open(dir string, queueName string, options *Options) error {
 		filePath:        q.path + "/" + IndexFileName,
 		filePrefix:      filePrefix,
 		fileSuffix:      fileSuffix,
-		lockMap:         make(map[int64]*sync.Mutex),
 		dbMap:           make(map[int64]*DB),
 		InitialMmapSize: q.options.indexPageSize,
 	}

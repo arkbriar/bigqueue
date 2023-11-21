@@ -11,8 +11,6 @@ import (
 
 // DBFactory is used to manupilate mulitple data files by index number
 type DBFactory struct {
-	lockMap map[int64]*sync.Mutex
-
 	// DB mapping with file index no
 	dbMap map[int64]*DB
 
@@ -35,20 +33,7 @@ func (f *DBFactory) acquireDB(index int64) (*DB, error) {
 		f.lock.Unlock()
 		return db, nil
 	}
-
-	lock := f.lockMap[index]
-	if lock == nil {
-		lock = &(sync.Mutex{})
-		f.lockMap[index] = lock
-	}
-	defer func() {
-		delete(f.lockMap, index)
-	}()
-	f.lock.Unlock()
-
-	// lock by index
-	lock.Lock()
-	defer lock.Unlock()
+	defer f.lock.Unlock()
 
 	db = &DB{
 		path:            f.getFilePath(index),
@@ -61,6 +46,7 @@ func (f *DBFactory) acquireDB(index int64) (*DB, error) {
 		return nil, err
 	}
 	f.dbMap[index] = db
+	
 	return db, nil
 }
 
@@ -81,14 +67,12 @@ func (f *DBFactory) Close() error {
 
 	// set to the emtpy map
 	f.dbMap = make(map[int64]*DB)
-	f.lockMap = make(map[int64]*sync.Mutex)
 
 	return nil
 
 }
 
 func (f *DBFactory) removeBeforeIndex(index int64) error {
-
 	f.lock.Lock()
 	defer f.lock.Unlock()
 
